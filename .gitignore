@@ -1,0 +1,6 @@
+app.env
+migrate
+postgresql/
+
+# Logging
+*.log

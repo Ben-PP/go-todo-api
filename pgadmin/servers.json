@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "postgres",
+      "Host": "db",
+      "Port": 5432,
+      "SSLMode": "allow",
+      "MaintenanceDB": "postgres",
+      "Username": "postgres",
+      "Group": "go-todo",
+      "Password": "mysecretpassword"
+    }
+  }
+}
