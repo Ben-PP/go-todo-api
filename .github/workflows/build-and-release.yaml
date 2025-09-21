@@ -32,9 +32,8 @@ jobs:
           if [ ! -e *.mod ]; then
             go mod init ${GITHUB_REPOSITORY}
           fi
-          go mod tidy
           go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o "go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}"
-          execFile=$(find . -type f -executable)
+          execFile="go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}"
       - run: echo $execFile
       - run: git version
       - run: git branch
