@@ -1,0 +1,53 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{steps.build.outputs.binary}}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: main
+      - name: setup Go Lang
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.24.0'
+      - name: build
+        id: build
+        run: |
+          go version
+          echo "os: $(go env GOOS) arch: $(go env GOARCH)"
+          if [ ! -e *.mod ]; then
+            go mod init ${GITHUB_REPOSITORY}
+          fi
+          go mod tidy
+          go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o "go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          execFile=$(find . -type f -executable)
+
+      - run: git version
+      - run: git branch
+      - run: git tag
+
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+            --repo="$GITHUB_REPOSITORY" \
+            --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+            --generate-notes
