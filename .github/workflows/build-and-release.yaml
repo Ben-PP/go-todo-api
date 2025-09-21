@@ -33,11 +33,7 @@ jobs:
             go mod init ${GITHUB_REPOSITORY}
           fi
           go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o "go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}"
-          execFile="go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}"
-      - run: echo $execFile
-      - run: git version
-      - run: git branch
-      - run: git tag
+          echo "LINUX_AMD64_EXEC=$(find . -type f -executable)" >> $GITHUB_ENV
       - name: Create release
         run: |
           gh release create $tag \
@@ -45,4 +41,4 @@ jobs:
             --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
             --generate-notes
       - name: Upload executables
-        run: gh release upload $tag $execFile
+        run: gh release upload $tag $LINUX_AMD64_EXEC
