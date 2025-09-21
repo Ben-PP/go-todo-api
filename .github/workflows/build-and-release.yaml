@@ -10,8 +10,6 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    outputs:
-      linux-amd64: ${{steps.build.outputs.binary}}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       tag: ${{ github.ref_name }}
@@ -24,8 +22,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: '^1.24.0'
-      - name: build
-        id: build
+      - name: build-and-release
         run: |
           go version
           echo "os: $(go env GOOS) arch: $(go env GOARCH)"
@@ -33,12 +30,9 @@ jobs:
             go mod init ${GITHUB_REPOSITORY}
           fi
           go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o "go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}"
-          echo "LINUX_AMD64_EXEC=$(find . -type f -executable)" >> $GITHUB_ENV
-      - name: Create release
-        run: |
+          execFile=$(find . -type f -executable)
           gh release create $tag \
             --repo="$GITHUB_REPOSITORY" \
             --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
             --generate-notes
-      - name: Upload executables
-        run: gh release upload $tag $LINUX_AMD64_EXEC
+          gh release upload $tag $execFile
