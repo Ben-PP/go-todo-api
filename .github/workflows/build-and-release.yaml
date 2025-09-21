@@ -11,7 +11,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{steps.build.outputs.binary}}
+      linux-amd64: ${{steps.build.outputs.linux-amd64}}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -41,6 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    needs: build
     steps:
       - name: Create release
         env:
@@ -51,3 +52,4 @@ jobs:
             --repo="$GITHUB_REPOSITORY" \
             --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
             --generate-notes
+          gh release upload "$tag" ${{needs.build.outputs.linux-amd64}}
