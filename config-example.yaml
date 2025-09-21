@@ -1,0 +1,15 @@
+host: # Address/domain name where the server is listening
+db:
+  host: # Database host
+  port: 5432 # Database port
+  user: # Database user
+  password: # Database password
+  database: # Database name
+  enable_ssl: false # Use SSL to connect to the database
+jwt:
+  lifespan:
+    access_token: 30 # Lifespan of access token in minutes
+    refresh_token: 43200 # Lifespan of refresh token in minutes (30 days)
+  secrets:
+    access: # Secret for signing access tokens
+    refresh: # Secret for signing refresh tokens
