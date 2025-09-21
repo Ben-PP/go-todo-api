@@ -10,25 +10,38 @@ import (
 var ErrConfigLoadFailed = errors.New("failed to load config")
 
 type Config struct {
-	Host                 string `mapstructure:"HOST"`
-	DbUrl                string `mapstructure:"DB_URL"`
-	AccessTokenLifeSpan  int    `mapstructure:"ACCESS_TOKEN_LIFE_SPAN"`
-	RefreshTokenLifeSpan int    `mapstructure:"REFRESH_TOKEN_LIFE_SPAN"`
-	JwtAccessSecret      string `mapstructure:"JWT_ACCESS_SECRET"`
-	JwtRefreshSecret     string `mapstructure:"JWT_REFRESH_SECRET"`
+	Host string `mapstructure:"host"`
+	Db   struct {
+		Host      string `mapstructure:"host"`
+		Port      int    `mapstructure:"port"`
+		User      string `mapstructure:"user"`
+		Password  string `mapstructure:"password"`
+		Database  string `mapstructure:"database"`
+		EnableSSL bool   `mapstructure:"enable_ssl"`
+	} `mapstructure:"db"`
+	JWT struct {
+		Lifespan struct {
+			AccessToken  int `mapstructure:"access_token"`
+			RefreshToken int `mapstructure:"refresh_token"`
+		} `mapstructure:"lifespan"`
+		Secrets struct {
+			Access  string `mapstructure:"access"`
+			Refresh string `mapstructure:"refresh"`
+		} `mapstructure:"secrets"`
+	} `mapstructure:"jwt"`
 }
 
 var globalConfig *Config
 
-func loadConfig(path string) (config *Config, err error) {
-	viper.AddConfigPath(path)
-
+func loadConfig() (config *Config, err error) {
 	if os.Getenv("GO_ENV") == "dev" {
-		viper.SetConfigName("dev")
+		viper.SetConfigName("dev-config")
+		viper.AddConfigPath(".")
 	} else {
-		viper.SetConfigName("prod")
+		viper.SetConfigName("config")
+		viper.AddConfigPath("$HOME/.config/go-todo")
 	}
-	viper.SetConfigType("env")
+	viper.SetConfigType("yaml")
 
 	viper.AutomaticEnv()
 
@@ -45,7 +58,7 @@ func loadConfig(path string) (config *Config, err error) {
 
 func Get() (config *Config, err error) {
 	if globalConfig == nil {
-		globalConfig, err = loadConfig(".")
+		globalConfig, err = loadConfig()
 		if err != nil {
 			err = errors.Join(ErrConfigLoadFailed, err)
 			return

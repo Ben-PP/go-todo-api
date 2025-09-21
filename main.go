@@ -33,7 +33,18 @@ func main() {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), config.DbUrl)
+	dbUrl := fmt.Sprintf(
+		"postgresql://%s:%s@%s:%d",
+		config.Db.User,
+		config.Db.Password,
+		config.Db.Host,
+		config.Db.Port,
+	)
+	if !config.Db.EnableSSL {
+		dbUrl = fmt.Sprintf("%s?sslmode=disable", dbUrl)
+	}
+
+	conn, err := pgx.Connect(context.Background(), dbUrl)
 	if err != nil {
 		_, file, line, _ := runtime.Caller(1)
 		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to connect to database.")

@@ -3,9 +3,10 @@ package jwt
 import (
 	"errors"
 	"fmt"
-	"go-todo/util/config"
 	"strings"
 	"time"
+
+	"go-todo/util/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -71,9 +72,9 @@ func generateJwt(username string, userID string, isAdmin bool, isRefreshToken bo
 		return "", nil, generateError(err)
 	}
 
-	authLifeSpan := config.AccessTokenLifeSpan
+	authLifeSpan := config.JWT.Lifespan.AccessToken
 	if isRefreshToken {
-		authLifeSpan = config.RefreshTokenLifeSpan
+		authLifeSpan = config.JWT.Lifespan.RefreshToken
 	}
 	lifeSpanDuration := time.Minute * time.Duration(authLifeSpan)
 	timeNow := time.Now().UTC()
@@ -97,9 +98,9 @@ func generateJwt(username string, userID string, isAdmin bool, isRefreshToken bo
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
-	secret := config.JwtAccessSecret
+	secret := config.JWT.Secrets.Access
 	if isRefreshToken {
-		secret = config.JwtRefreshSecret
+		secret = config.JWT.Secrets.Refresh
 	}
 	encodedToken, err := token.SignedString([]byte(secret))
 	if err != nil {
@@ -125,9 +126,9 @@ func decodeJwt(tokenString string, isRefreshToken bool) (*GtClaims, error) {
 		return nil, err
 	}
 
-	secret := config.JwtAccessSecret
+	secret := config.JWT.Secrets.Access
 	if isRefreshToken {
-		secret = config.JwtRefreshSecret
+		secret = config.JWT.Secrets.Refresh
 	}
 	decodedToken, err := jwt.ParseWithClaims(tokenString, &GtClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(secret), nil
