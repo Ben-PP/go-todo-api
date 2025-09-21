@@ -45,4 +45,5 @@ jobs:
             --repo="$GITHUB_REPOSITORY" \
             --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
             --generate-notes
-          gh release upload "$tag" $execFile
+      - name: Upload executables
+        run: gh release upload "$tag" $execFile
