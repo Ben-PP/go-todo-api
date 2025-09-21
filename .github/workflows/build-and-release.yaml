@@ -30,7 +30,7 @@ jobs:
             go mod init ${GITHUB_REPOSITORY}
           fi
           go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o "go-todo_$(go env GOOS)-$(go env GOARCH)_${GITHUB_REF_NAME}"
-          execFile=$(find . -type f -executable)
+          execFile=$(find . -type f -executable -name 'go-todo*')
           gh release create $tag \
             --repo="$GITHUB_REPOSITORY" \
             --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
