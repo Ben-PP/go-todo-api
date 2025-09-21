@@ -45,5 +45,9 @@ Run the application with Make.
 make dev
 ```
 
+
 Logs can be found in the `app.log` file when `GO_ENV=dev` and in
 `/var/log/go-todo/app.log` else.
+
+> With this command you can look at the logs in pretty format: `tail -f app.log | jq --indent 4`
+
