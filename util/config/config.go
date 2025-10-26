@@ -46,7 +46,7 @@ func loadConfig() (config *Config, err error) {
 		viper.AddConfigPath(".")
 	} else {
 		viper.SetConfigName("config")
-		viper.AddConfigPath("$HOME/.config/go-todo")
+		viper.AddConfigPath("/etc/go-todo")
 	}
 	viper.SetConfigType("yaml")
 
