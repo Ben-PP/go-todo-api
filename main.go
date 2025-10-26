@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 	"runtime"
 	"time"
 
@@ -64,6 +65,9 @@ func main() {
 	listController := todo.NewController(mydb, ctx)
 	listRoutes := todo.NewRoutes(listController)
 
+	if os.Getenv("GO_ENV") != "dev" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	router := gin.Default()
 
 	router.Use(middleware.Logger())
@@ -91,6 +95,16 @@ func main() {
 		listRoutes.Register(v1)
 	}
 
-	slog.Info("Starting server.")
-	router.Run(fmt.Sprintf("%v:8000", config.Host))
+	addr := fmt.Sprintf("%v:%v", config.Host, config.Port)
+	if len(config.Proxies) > 0 {
+		router.SetTrustedProxies(config.Proxies)
+	}
+	slog.Info("Using proxies: " + fmt.Sprint(config.Proxies))
+	if config.SSL.Enabled {
+		slog.Info("SSL enabled, starting HTTPS server.")
+		router.RunTLS(addr, config.SSL.CertFile, config.SSL.KeyFile)
+		return
+	} else {
+		router.Run(addr)
+	}
 }
