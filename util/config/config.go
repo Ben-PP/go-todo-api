@@ -10,9 +10,10 @@ import (
 var ErrConfigLoadFailed = errors.New("failed to load config")
 
 type Config struct {
-	Host string `mapstructure:"host"`
-	Port int    `mapstructure:"port"`
-	Db   struct {
+	Host    string   `mapstructure:"host"`
+	Port    int      `mapstructure:"port"`
+	Proxies []string `mapstructure:"proxies"`
+	Db      struct {
 		Host      string `mapstructure:"host"`
 		Port      int    `mapstructure:"port"`
 		User      string `mapstructure:"user"`

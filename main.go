@@ -96,6 +96,10 @@ func main() {
 	}
 
 	addr := fmt.Sprintf("%v:%v", config.Host, config.Port)
+	if len(config.Proxies) > 0 {
+		router.SetTrustedProxies(config.Proxies)
+	}
+	slog.Info("Using proxies: " + fmt.Sprint(config.Proxies))
 	if config.SSL.Enabled {
 		slog.Info("SSL enabled, starting HTTPS server.")
 		router.RunTLS(addr, config.SSL.CertFile, config.SSL.KeyFile)
