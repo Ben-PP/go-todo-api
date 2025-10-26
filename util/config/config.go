@@ -11,6 +11,7 @@ var ErrConfigLoadFailed = errors.New("failed to load config")
 
 type Config struct {
 	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
 	Db   struct {
 		Host      string `mapstructure:"host"`
 		Port      int    `mapstructure:"port"`
@@ -19,6 +20,11 @@ type Config struct {
 		Database  string `mapstructure:"database"`
 		EnableSSL bool   `mapstructure:"enable_ssl"`
 	} `mapstructure:"db"`
+	SSL struct {
+		Enabled  bool   `mapstructure:"enabled"`
+		CertFile string `mapstructure:"cert_file"`
+		KeyFile  string `mapstructure:"key_file"`
+	} `mapstructure:"ssl"`
 	JWT struct {
 		Lifespan struct {
 			AccessToken  int `mapstructure:"access_token"`
