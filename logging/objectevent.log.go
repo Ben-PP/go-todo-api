@@ -10,6 +10,7 @@ type ObjectEventSub int
 
 const (
 	ObjectEventSubList ObjectEventSub = iota
+	ObjectEventSubListShare
 	ObjectEventSubTodo
 	ObjectEventSubUser
 )
@@ -18,6 +19,8 @@ func (e ObjectEventSub) String() string {
 	switch e {
 	case ObjectEventSubList:
 		return "list"
+	case ObjectEventSubListShare:
+		return "list_share"
 	case ObjectEventSubTodo:
 		return "todo"
 	case ObjectEventSubUser:
@@ -118,6 +121,22 @@ func LogObjectEvent(
 					slog.String("id", so.ID),
 					slog.String("title", so.Title),
 					slog.String("description", so.Description.String),
+				)
+				groupOld = &gOld
+			}
+		case *db.ListShare:
+			gCur := slog.Group(
+				curKey,
+				slog.String("id", sc.ListID),
+				slog.String("userID", sc.UserID),
+			)
+			groupCurrent = &gCur
+			if subOld != nil {
+				so := subOld.(*db.ListShare)
+				gOld := slog.Group(
+					oldKey,
+					slog.String("id", so.ListID),
+					slog.String("title", so.UserID),
 				)
 				groupOld = &gOld
 			}
