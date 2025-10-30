@@ -1,0 +1,15 @@
+name: Deploy
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Ben-PP/action-publy-publish@v1.0.0
+        with:
+          publy-url: https://publy.bendevs.com
+          pub: go-todo
+          api-token: ${{secrets.PUBLY_TOKEN}}
