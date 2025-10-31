@@ -26,3 +26,18 @@ func (q *Queries) CreateShare(ctx context.Context, arg CreateShareParams) (ListS
 	err := row.Scan(&i.ListID, &i.UserID)
 	return i, err
 }
+
+const deleteShare = `-- name: DeleteShare :exec
+DELETE FROM list_shares
+WHERE list_id = $1 AND user_id = $2
+`
+
+type DeleteShareParams struct {
+	ListID string `json:"list_id"`
+	UserID string `json:"user_id"`
+}
+
+func (q *Queries) DeleteShare(ctx context.Context, arg DeleteShareParams) error {
+	_, err := q.db.Exec(ctx, deleteShare, arg.ListID, arg.UserID)
+	return err
+}

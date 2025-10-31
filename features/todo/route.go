@@ -25,12 +25,12 @@ func (routes *TodoRoutes) Register(rg *gin.RouterGroup) {
 	router.PATCH("/:listID", routes.todoController.UpdateList)
 	router.DELETE("/:listID", routes.todoController.DeleteList)
 	router.POST("/:listID/share", routes.todoController.CreateShare)
+	router.DELETE("/:listID/share/:userID", routes.todoController.DeleteShare)
 
 	todoRouter := router.Group("/:listID/todo")
 	todoRouter.POST("/", routes.todoController.CreateTodo)
 	todoRouter.PATCH("/:todoID", routes.todoController.UpdateTodo)
 	todoRouter.DELETE("/:todoID", routes.todoController.DeleteTodo)
 
-	// TODO Implement delete share
 	// TODO Implement get shares
 }
