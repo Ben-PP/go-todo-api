@@ -41,3 +41,35 @@ func (q *Queries) DeleteShare(ctx context.Context, arg DeleteShareParams) error 
 	_, err := q.db.Exec(ctx, deleteShare, arg.ListID, arg.UserID)
 	return err
 }
+
+const readShares = `-- name: ReadShares :many
+SELECT ls.list_id, ls.user_id, u.username FROM list_shares ls
+JOIN users u ON ls.user_id = u.id
+WHERE ls.list_id = $1
+`
+
+type ReadSharesRow struct {
+	ListID   string `json:"list_id"`
+	UserID   string `json:"user_id"`
+	Username string `json:"username"`
+}
+
+func (q *Queries) ReadShares(ctx context.Context, listID string) ([]ReadSharesRow, error) {
+	rows, err := q.db.Query(ctx, readShares, listID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ReadSharesRow{}
+	for rows.Next() {
+		var i ReadSharesRow
+		if err := rows.Scan(&i.ListID, &i.UserID, &i.Username); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
