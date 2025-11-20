@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"runtime"
 
 	"go-todo/gterrors"
@@ -10,6 +11,7 @@ import (
 	"go-todo/util/mycontext"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
 func (controller *TodoController) ReadShares(ctx *gin.Context) {
@@ -35,6 +37,10 @@ func (controller *TodoController) ReadShares(ctx *gin.Context) {
 
 	list, err := controller.db.GetList(ctx, listID)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			ctx.Error(gterrors.ErrNotFound).SetType(gin.ErrorTypePublic)
+			return
+		}
 		_, file, line, _ := runtime.Caller(0)
 		mycontext.CtxAddGtInternalError("failed to get list", file, line, err, ctx)
 		return
