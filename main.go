@@ -58,7 +58,7 @@ func main() {
 		return
 	}
 
-	migrate, err := migrate.NewWithSourceInstance(
+	m, err := migrate.NewWithSourceInstance(
 		"iofs",
 		migrationsDriver,
 		dbUrl,
@@ -69,10 +69,12 @@ func main() {
 		return
 	}
 
-	if err := migrate.Up(); err != nil {
-		_, file, line, _ := runtime.Caller(1)
-		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to run database migrations.")
-		return
+	if err := m.Up(); err != nil {
+		if err != migrate.ErrNoChange {
+			_, file, line, _ := runtime.Caller(1)
+			logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to run database migrations.")
+			return
+		}
 	}
 
 	conn, err := pgx.Connect(context.Background(), dbUrl)
