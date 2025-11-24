@@ -68,6 +68,7 @@ func (controller *TodoController) ReadShares(ctx *gin.Context) {
 	responseShares := make([]schemas.ResponseShare, 0, len(shares))
 	for _, share := range shares {
 		responseShares = append(responseShares, schemas.ResponseShare{
+			ID:       share.ID,
 			ListID:   share.ListID,
 			UserID:   share.UserID,
 			Username: share.Username,

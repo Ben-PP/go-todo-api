@@ -5,6 +5,7 @@ type CreateShare struct {
 }
 
 type ResponseShare struct {
+	ID       string `json:"id"`
 	ListID   string `json:"list_id"`
 	UserID   string `json:"user_id"`
 	Username string `json:"username"`

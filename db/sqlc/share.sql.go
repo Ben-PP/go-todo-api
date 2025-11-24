@@ -10,20 +10,27 @@ import (
 )
 
 const createShare = `-- name: CreateShare :one
-INSERT INTO list_shares (list_id, user_id)
-VALUES ($1, $2)
-RETURNING list_id, user_id
+INSERT INTO list_shares (id, list_id, user_id)
+VALUES ($1, $2, $3)
+RETURNING id, list_id, user_id
 `
 
 type CreateShareParams struct {
+	ID     string `json:"id"`
 	ListID string `json:"list_id"`
 	UserID string `json:"user_id"`
 }
 
-func (q *Queries) CreateShare(ctx context.Context, arg CreateShareParams) (ListShare, error) {
-	row := q.db.QueryRow(ctx, createShare, arg.ListID, arg.UserID)
-	var i ListShare
-	err := row.Scan(&i.ListID, &i.UserID)
+type CreateShareRow struct {
+	ID     string `json:"id"`
+	ListID string `json:"list_id"`
+	UserID string `json:"user_id"`
+}
+
+func (q *Queries) CreateShare(ctx context.Context, arg CreateShareParams) (CreateShareRow, error) {
+	row := q.db.QueryRow(ctx, createShare, arg.ID, arg.ListID, arg.UserID)
+	var i CreateShareRow
+	err := row.Scan(&i.ID, &i.ListID, &i.UserID)
 	return i, err
 }
 
@@ -43,12 +50,13 @@ func (q *Queries) DeleteShare(ctx context.Context, arg DeleteShareParams) error 
 }
 
 const readShares = `-- name: ReadShares :many
-SELECT ls.list_id, ls.user_id, u.username FROM list_shares ls
+SELECT ls.id, ls.list_id, ls.user_id, u.username FROM list_shares ls
 JOIN users u ON ls.user_id = u.id
 WHERE ls.list_id = $1
 `
 
 type ReadSharesRow struct {
+	ID       string `json:"id"`
 	ListID   string `json:"list_id"`
 	UserID   string `json:"user_id"`
 	Username string `json:"username"`
@@ -63,7 +71,12 @@ func (q *Queries) ReadShares(ctx context.Context, listID string) ([]ReadSharesRo
 	items := []ReadSharesRow{}
 	for rows.Next() {
 		var i ReadSharesRow
-		if err := rows.Scan(&i.ListID, &i.UserID, &i.Username); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.ListID,
+			&i.UserID,
+			&i.Username,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

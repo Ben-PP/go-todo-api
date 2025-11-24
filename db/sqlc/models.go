@@ -29,6 +29,7 @@ type List struct {
 type ListShare struct {
 	ListID string `json:"list_id"`
 	UserID string `json:"user_id"`
+	ID     string `json:"id"`
 }
 
 type Todo struct {

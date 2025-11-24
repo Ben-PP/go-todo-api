@@ -12,6 +12,7 @@ import (
 	"go-todo/util/mycontext"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -92,6 +93,7 @@ func (controller *TodoController) CreateShare(ctx *gin.Context) {
 	}
 
 	args := &db.CreateShareParams{
+		ID:     uuid.New().String(),
 		ListID: listID,
 		UserID: userToAdd.ID,
 	}
@@ -131,5 +133,5 @@ func (controller *TodoController) CreateShare(ctx *gin.Context) {
 		nil,
 		logging.ObjectEventSubListShare,
 	)
-	ctx.JSON(201, gin.H{"status": "shared", "list": listShare.ListID})
+	ctx.JSON(201, gin.H{"status": "shared", "id": listShare.ID})
 }
