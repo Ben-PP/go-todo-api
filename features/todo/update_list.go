@@ -2,6 +2,7 @@ package todo
 
 import (
 	"errors"
+	"reflect"
 	"runtime"
 
 	db "go-todo/db/sqlc"
@@ -97,9 +98,8 @@ func (controller *TodoController) UpdateList(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventUpdate,
 		reqUser,
-		&newList,
-		&oldList,
-		logging.ObjectEventSubList,
+		newList.ID,
+		reflect.TypeOf(newList).String(),
 	)
 	ctx.JSON(200, gin.H{"status": "ok", "list": newList})
 }

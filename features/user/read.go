@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"runtime"
 
 	"go-todo/gterrors"
@@ -76,9 +77,8 @@ func (controller *UserController) ReadUser(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventRead,
 		reqUser,
-		&user,
-		nil,
-		logging.ObjectEventSubUser,
+		user.ID,
+		reflect.TypeOf(user).String(),
 	)
 	ctx.JSON(200, gin.H{
 		"status": "ok",

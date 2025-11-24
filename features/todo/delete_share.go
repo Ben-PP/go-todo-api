@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"runtime"
 
 	db "go-todo/db/sqlc"
@@ -108,9 +109,8 @@ func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventDelete,
 		&reqUser,
-		&listShare,
-		nil,
-		logging.ObjectEventSubListShare,
+		listShare.ID,
+		reflect.TypeOf(listShare).String(),
 	)
-	ctx.JSON(200, gin.H{"status": "removed", "share": gin.H{"list_id": listShare.ListID, "user_id": listShare.UserID}})
+	ctx.JSON(200, gin.H{"status": "removed", "share": listShare.ID})
 }

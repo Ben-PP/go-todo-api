@@ -2,6 +2,7 @@ package todo
 
 import (
 	"fmt"
+	"reflect"
 	"runtime"
 
 	"go-todo/gterrors"
@@ -77,9 +78,8 @@ func (controller *TodoController) DeleteList(ctx *gin.Context) {
 			ctx.ClientIP(),
 			logging.ObjectEventDelete,
 			reqUser,
-			"deleted",
 			listDeleted.ID,
-			logging.ObjectEventSubList,
+			reflect.TypeOf(listDeleted).String(),
 		)
 	}
 	ctx.JSON(204, gin.H{})

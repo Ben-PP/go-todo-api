@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"runtime"
 
 	db "go-todo/db/sqlc"
@@ -98,9 +99,8 @@ func (controller *UserController) UpdateUser(ctx *gin.Context) {
 			ctx.ClientIP(),
 			logging.ObjectEventUpdate,
 			&reqUser,
-			&oldUser,
-			&oldUser,
-			logging.ObjectEventSubUser,
+			oldUser.ID,
+			reflect.TypeOf(*oldUser).String(),
 		)
 		ctx.JSON(http.StatusNoContent, gin.H{})
 		return

@@ -2,6 +2,7 @@ package todo
 
 import (
 	"errors"
+	"reflect"
 	"runtime"
 	"slices"
 
@@ -87,9 +88,8 @@ func (controller *TodoController) ReadListWithTodos(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventRead,
 		reqUser,
-		&list,
-		nil,
-		logging.ObjectEventSubList,
+		list.ID,
+		reflect.TypeOf(list).String(),
 	)
 	ctx.JSON(200, gin.H{"status": "ok", "list": response})
 }

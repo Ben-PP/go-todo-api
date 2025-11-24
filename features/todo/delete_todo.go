@@ -83,9 +83,8 @@ func (controller *TodoController) DeleteTodo(ctx *gin.Context) {
 			ctx.ClientIP(),
 			logging.ObjectEventDelete,
 			reqUser,
-			"deleted",
 			todoID,
-			logging.ObjectEventSubTodo,
+			"db.Todo",
 		)
 	}
 

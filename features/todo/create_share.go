@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"runtime"
 
 	db "go-todo/db/sqlc"
@@ -129,9 +130,8 @@ func (controller *TodoController) CreateShare(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventCreate,
 		&reqUser,
-		&listShare,
-		nil,
-		logging.ObjectEventSubListShare,
+		listShare.ID,
+		reflect.TypeOf(listShare).String(),
 	)
 	ctx.JSON(201, gin.H{"status": "shared", "id": listShare.ID})
 }
