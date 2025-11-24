@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"log/slog"
 	"os"
@@ -18,9 +19,14 @@ import (
 	"go-todo/middleware"
 	"go-todo/util/config"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/jackc/pgx/v5"
 )
 
+//go:embed db/migrations/*.sql
+var migrationFiles embed.FS
 var ctx context.Context
 
 func main() {
@@ -43,6 +49,32 @@ func main() {
 	)
 	if !config.Db.EnableSSL {
 		dbUrl = fmt.Sprintf("%s?sslmode=disable", dbUrl)
+	}
+
+	migrationsDriver, err := iofs.New(migrationFiles, "db/migrations")
+	if err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to initialize migration source.")
+		return
+	}
+
+	m, err := migrate.NewWithSourceInstance(
+		"iofs",
+		migrationsDriver,
+		dbUrl,
+	)
+	if err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to initialize database migrations.")
+		return
+	}
+
+	if err := m.Up(); err != nil {
+		if err != migrate.ErrNoChange {
+			_, file, line, _ := runtime.Caller(1)
+			logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to run database migrations.")
+			return
+		}
 	}
 
 	conn, err := pgx.Connect(context.Background(), dbUrl)
