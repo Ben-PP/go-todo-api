@@ -2,6 +2,7 @@ package todo
 
 import (
 	"errors"
+	"reflect"
 	"runtime"
 	"slices"
 	"time"
@@ -122,9 +123,8 @@ func (controller *TodoController) CreateTodo(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventCreate,
 		reqUser,
-		&todo,
-		nil,
-		logging.ObjectEventSubTodo,
+		todo.ID,
+		reflect.TypeOf(todo).String(),
 	)
 	ctx.JSON(201, gin.H{"status": "created", "todo": todo})
 }

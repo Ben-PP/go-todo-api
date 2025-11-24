@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"runtime"
 
 	db "go-todo/db/sqlc"
@@ -101,9 +102,8 @@ func (controller *TodoController) CreateList(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventCreate,
 		&reqUser,
-		&list,
-		nil,
-		logging.ObjectEventSubList,
+		list.ID,
+		reflect.TypeOf(list).String(),
 	)
 	ctx.JSON(201, gin.H{"status": "created", "list": list})
 }

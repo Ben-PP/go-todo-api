@@ -2,6 +2,7 @@ package todo
 
 import (
 	"fmt"
+	"reflect"
 	"runtime"
 	"slices"
 
@@ -125,9 +126,8 @@ func (controller *TodoController) ReadLists(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventRead,
 		reqUser,
-		*lists,
-		nil,
-		logging.ObjectEventSubList,
+		fmt.Sprintf("%v", listIds),
+		reflect.TypeOf(lists).String(),
 	)
 	ctx.JSON(200, gin.H{"status": "ok", "lists": response})
 }

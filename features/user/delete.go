@@ -2,11 +2,13 @@ package user
 
 import (
 	"fmt"
+	"net/http"
+	"reflect"
+	"runtime"
+
 	"go-todo/gterrors"
 	"go-todo/logging"
 	"go-todo/util/mycontext"
-	"net/http"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 )
@@ -67,9 +69,8 @@ func (controller *UserController) DeleteUser(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventDelete,
 		&reqUser,
-		"deleted",
 		userIDToDelete,
-		logging.ObjectEventSubUser,
+		reflect.TypeOf(reqUser).String(),
 	)
 	ctx.JSON(http.StatusNoContent, gin.H{})
 }

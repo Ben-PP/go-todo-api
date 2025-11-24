@@ -2,6 +2,10 @@ package user
 
 import (
 	"errors"
+	"net/http"
+	"reflect"
+	"runtime"
+
 	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/logging"
@@ -9,8 +13,6 @@ import (
 	"go-todo/util/mycontext"
 	"go-todo/util/passwd"
 	"go-todo/util/validate"
-	"net/http"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -94,9 +96,8 @@ func (controller *UserController) CreateUser(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventCreate,
 		nil,
-		&user,
-		nil,
-		logging.ObjectEventSubUser,
+		user.ID,
+		reflect.TypeOf(user).String(),
 	)
 	ctx.JSON(http.StatusCreated, gin.H{"status": "created", "user": user})
 }

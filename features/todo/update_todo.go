@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"runtime"
 	"slices"
 
@@ -136,9 +137,8 @@ func (controller *TodoController) UpdateTodo(ctx *gin.Context) {
 		ctx.ClientIP(),
 		logging.ObjectEventUpdate,
 		reqUser,
-		&newTodo,
-		&oldTodo,
-		logging.ObjectEventSubTodo,
+		newTodo.ID,
+		reflect.TypeOf(newTodo).String(),
 	)
 	ctx.JSON(200, gin.H{"status": "ok", "todo": newTodo})
 }
