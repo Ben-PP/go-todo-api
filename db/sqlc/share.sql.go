@@ -36,17 +36,24 @@ func (q *Queries) CreateShare(ctx context.Context, arg CreateShareParams) (Creat
 
 const deleteShare = `-- name: DeleteShare :exec
 DELETE FROM list_shares
-WHERE list_id = $1 AND user_id = $2
+WHERE id = $1
 `
 
-type DeleteShareParams struct {
-	ListID string `json:"list_id"`
-	UserID string `json:"user_id"`
+func (q *Queries) DeleteShare(ctx context.Context, id string) error {
+	_, err := q.db.Exec(ctx, deleteShare, id)
+	return err
 }
 
-func (q *Queries) DeleteShare(ctx context.Context, arg DeleteShareParams) error {
-	_, err := q.db.Exec(ctx, deleteShare, arg.ListID, arg.UserID)
-	return err
+const getShareById = `-- name: GetShareById :one
+SELECT list_id, user_id, id FROM list_shares
+WHERE id = $1
+`
+
+func (q *Queries) GetShareById(ctx context.Context, id string) (ListShare, error) {
+	row := q.db.QueryRow(ctx, getShareById, id)
+	var i ListShare
+	err := row.Scan(&i.ListID, &i.UserID, &i.ID)
+	return i, err
 }
 
 const readShares = `-- name: ReadShares :many

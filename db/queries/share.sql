@@ -1,3 +1,7 @@
+-- name: GetShareById :one
+SELECT * FROM list_shares
+WHERE id = $1;
+
 -- name: ReadShares :many
 SELECT ls.id, ls.list_id, ls.user_id, u.username FROM list_shares ls
 JOIN users u ON ls.user_id = u.id
@@ -10,4 +14,4 @@ RETURNING id, list_id, user_id;
 
 -- name: DeleteShare :exec
 DELETE FROM list_shares
-WHERE list_id = $1 AND user_id = $2;
+WHERE id = $1;
