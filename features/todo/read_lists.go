@@ -127,7 +127,7 @@ func (controller *TodoController) ReadLists(ctx *gin.Context) {
 		logging.ObjectEventRead,
 		reqUser,
 		fmt.Sprintf("%v", listIds),
-		reflect.TypeOf(lists).String(),
+		reflect.TypeOf([]db.List{}).String(),
 	)
 	ctx.JSON(200, gin.H{"status": "ok", "lists": response})
 }

@@ -3,6 +3,7 @@ package todo
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"runtime"
 	"slices"
 
@@ -84,7 +85,7 @@ func (controller *TodoController) DeleteTodo(ctx *gin.Context) {
 			logging.ObjectEventDelete,
 			reqUser,
 			todoID,
-			"db.Todo",
+			reflect.TypeOf(db.Todo{}).String(),
 		)
 	}
 

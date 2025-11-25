@@ -100,7 +100,7 @@ func (controller *UserController) UpdateUser(ctx *gin.Context) {
 			logging.ObjectEventUpdate,
 			&reqUser,
 			oldUser.ID,
-			reflect.TypeOf(*oldUser).String(),
+			reflect.TypeOf(db.User{}).String(),
 		)
 		ctx.JSON(http.StatusNoContent, gin.H{})
 		return

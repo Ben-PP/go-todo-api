@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"runtime"
 
-	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/logging"
 	"go-todo/util/mycontext"
@@ -19,7 +18,7 @@ import (
 // Removes a share for a list
 func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 	listID := ctx.Param("listID")
-	userToRemoveID := ctx.Param("userID")
+	shareID := ctx.Param("shareID")
 
 	tokenUserId, tokenUserName, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {
@@ -56,8 +55,18 @@ func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 		mycontext.CtxAddGtInternalError("failed to get list", file, line, err, ctx)
 		return
 	}
+	listShare, err := controller.db.GetShareById(ctx, shareID)
+	if err != nil {
+		_, file, line, _ := runtime.Caller(0)
+		if errors.Is(err, pgx.ErrNoRows) {
+			ctx.Error(gterrors.ErrNotFound).SetType(gin.ErrorTypePublic)
+			return
+		}
+		mycontext.CtxAddGtInternalError("failed to get list share", file, line, err, ctx)
+		return
+	}
 
-	if list.UserID != reqUser.ID && (!reqUser.IsAdmin && reqUser.ID != userToRemoveID) {
+	if list.UserID != reqUser.ID && (!reqUser.IsAdmin && reqUser.ID != listShare.UserID) {
 		logging.LogSecurityEvent(
 			logging.SecurityScoreMedium,
 			logging.SecurityEventForbiddenAction,
@@ -69,12 +78,7 @@ func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 		return
 	}
 
-	args := &db.DeleteShareParams{
-		ListID: listID,
-		UserID: userToRemoveID,
-	}
-
-	err = controller.db.DeleteShare(ctx, *args)
+	err = controller.db.DeleteShare(ctx, shareID)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		errMessage := "failed to unshare list"
@@ -100,17 +104,13 @@ func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 		return
 	}
 
-	listShare := db.ListShare{
-		ListID: list.ID,
-		UserID: userToRemoveID,
-	}
 	logging.LogObjectEvent(
 		ctx.FullPath(),
 		ctx.ClientIP(),
 		logging.ObjectEventDelete,
 		&reqUser,
-		listShare.ID,
+		shareID,
 		reflect.TypeOf(listShare).String(),
 	)
-	ctx.JSON(200, gin.H{"status": "removed", "share": listShare.ID})
+	ctx.JSON(200, gin.H{"status": "removed", "share": shareID})
 }

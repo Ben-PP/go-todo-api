@@ -131,7 +131,7 @@ func (controller *TodoController) CreateShare(ctx *gin.Context) {
 		logging.ObjectEventCreate,
 		&reqUser,
 		listShare.ID,
-		reflect.TypeOf(listShare).String(),
+		reflect.TypeOf(db.ListShare{}).String(),
 	)
 	ctx.JSON(201, gin.H{"status": "shared", "id": listShare.ID})
 }

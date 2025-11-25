@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"runtime"
 
+	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/logging"
 	"go-todo/util/mycontext"
@@ -70,7 +71,7 @@ func (controller *UserController) DeleteUser(ctx *gin.Context) {
 		logging.ObjectEventDelete,
 		&reqUser,
 		userIDToDelete,
-		reflect.TypeOf(reqUser).String(),
+		reflect.TypeOf(db.User{}).String(),
 	)
 	ctx.JSON(http.StatusNoContent, gin.H{})
 }

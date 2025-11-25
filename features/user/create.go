@@ -97,7 +97,7 @@ func (controller *UserController) CreateUser(ctx *gin.Context) {
 		logging.ObjectEventCreate,
 		nil,
 		user.ID,
-		reflect.TypeOf(user).String(),
+		reflect.TypeOf(db.User{}).String(),
 	)
 	ctx.JSON(http.StatusCreated, gin.H{"status": "created", "user": user})
 }
