@@ -6,29 +6,6 @@ import (
 	db "go-todo/db/sqlc"
 )
 
-type ObjectEventSub int
-
-const (
-	ObjectEventSubList ObjectEventSub = iota
-	ObjectEventSubListShare
-	ObjectEventSubTodo
-	ObjectEventSubUser
-)
-
-func (e ObjectEventSub) String() string {
-	switch e {
-	case ObjectEventSubList:
-		return "list"
-	case ObjectEventSubListShare:
-		return "list_share"
-	case ObjectEventSubTodo:
-		return "todo"
-	case ObjectEventSubUser:
-		return "user"
-	}
-	return "unknown"
-}
-
 type ObjectEvent int
 
 const (
