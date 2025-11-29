@@ -5,6 +5,12 @@ type Login struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type LoginResponse struct {
+	Status       string `json:"status"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 type Refresh struct {
 	RefreshToken string `json:"refresh_token" binding:"required"`
 }

@@ -1,0 +1,53 @@
+definitions:
+  schemas.Login:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  schemas.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user with username and password, returning JWT tokens
+        upon successful authentication.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns access and refresh tokens.
+          schema:
+            $ref: '#/definitions/schemas.LoginResponse'
+        "400":
+          description: Bad request due to invalid input.
+        "401":
+          description: Unauthorized due to invalid credentials.
+        "500":
+          description: Internal server error.
+      summary: Login user
+      tags:
+      - Auth
+swagger: "2.0"
