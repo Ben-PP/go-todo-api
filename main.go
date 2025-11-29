@@ -10,8 +10,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	db "go-todo/db/sqlc"
+	docs "go-todo/docs"
 	"go-todo/features/auth"
 	"go-todo/features/todo"
 	"go-todo/features/user"
@@ -118,6 +121,7 @@ func main() {
 	}))
 
 	{
+		docs.SwaggerInfo.BasePath = "/api/v1"
 		v1 := router.Group("/api/v1")
 		v1.GET("/status", func(ctx *gin.Context) {
 			ctx.JSON(200, gin.H{"status": "ok"})
@@ -125,6 +129,7 @@ func main() {
 		authRoutes.Register(v1)
 		userRoutes.Register(v1)
 		listRoutes.Register(v1)
+		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
 	addr := fmt.Sprintf("%v:%v", config.Host, config.Port)

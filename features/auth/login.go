@@ -2,6 +2,9 @@ package auth
 
 import (
 	"errors"
+	"net/http"
+	"runtime"
+
 	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/logging"
@@ -10,14 +13,26 @@ import (
 	"go-todo/util/mycontext"
 	"go-todo/util/passwd"
 	"go-todo/util/validate"
-	"net/http"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// @BasePath /api/v1
+
+// Login godoc
+// @Summary Login user
+// @Description Logs in a user with username and password, returning JWT tokens upon successful authentication.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param login body schemas.Login true "Login credentials"
+// @Success 200 {object} schemas.LoginResponse "Returns access and refresh tokens."
+// @Failure 400 "Bad request due to invalid input."
+// @Failure 401 "Unauthorized due to invalid credentials."
+// @Failure 500 "Internal server error."
+// @Router /auth/login [post]
 func (controller *AuthController) Login(ctx *gin.Context) {
 	var payload *schemas.Login
 	if ok := mycontext.ShouldBindBodyWithJSON(&payload, ctx); !ok {
@@ -123,9 +138,10 @@ func (controller *AuthController) Login(ctx *gin.Context) {
 		ctx.ClientIP(),
 	)
 	logTokenCreations([]*jwt.GtClaims{refreshClaims, accessClaims}, ctx)
-	ctx.JSON(http.StatusOK, gin.H{
-		"status":        "ok",
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	})
+	response := &schemas.LoginResponse{
+		Status:       "ok",
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+	ctx.JSON(http.StatusOK, response)
 }
