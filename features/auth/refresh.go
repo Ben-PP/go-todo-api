@@ -3,20 +3,34 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"runtime"
+
 	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/logging"
 	"go-todo/schemas"
 	"go-todo/util/jwt"
 	"go-todo/util/mycontext"
-	"net/http"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// Refresh handles token refresh requests.
+//
+//	@Summary		Refresh tokens
+//	@Description	Refreshes JWT access and refresh tokens using a valid refresh token.
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			refresh	body		schemas.Refresh			true	"Refresh token"
+//	@Success		200		{object}	schemas.LoginResponse	"Returns new access and refresh tokens."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to invalid or expired token."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/auth/refresh [post]
 func (controller *AuthController) Refresh(ctx *gin.Context) {
 	var payload *schemas.Refresh
 	if ok := mycontext.ShouldBindBodyWithJSON(&payload, ctx); !ok {
@@ -163,9 +177,10 @@ func (controller *AuthController) Refresh(ctx *gin.Context) {
 	logSessionRefresh(true)
 	logTokenCreations([]*jwt.GtClaims{refreshClaims, accessClaims}, ctx)
 	logTokenEventUse(true, decodedRefreshToken, ctx)
-	ctx.JSON(http.StatusOK, gin.H{
-		"status":        "ok",
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	})
+	response := &schemas.LoginResponse{
+		Status:       "ok",
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+	ctx.JSON(http.StatusOK, response)
 }

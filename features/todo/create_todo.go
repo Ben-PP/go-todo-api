@@ -21,6 +21,23 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// CreateTodo handles the creation of a new todo item.
+//
+//	@Summary		Create a new todo item
+//	@Description	Creates a new todo item in the specified todo list.
+//	@Tags			Todos
+//	@Security		Bearer
+//	@Accept			json
+//	@Produce		json
+//	@Param			listID	path		string					true	"ID of the todo list"
+//	@Param			todo	body		schemas.CreateTodo		true	"Todo item to create"
+//	@Success		201		{object}	db.Todo					"Returns the created todo item."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo list not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID}/todo [post]
 func (controller *TodoController) CreateTodo(ctx *gin.Context) {
 	payload := &schemas.CreateTodo{}
 	description := ""
@@ -126,5 +143,5 @@ func (controller *TodoController) CreateTodo(ctx *gin.Context) {
 		todo.ID,
 		reflect.TypeOf(todo).String(),
 	)
-	ctx.JSON(201, gin.H{"status": "created", "todo": todo})
+	ctx.JSON(201, todo)
 }

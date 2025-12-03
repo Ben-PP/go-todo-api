@@ -14,7 +14,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Controller for deleting users
+// DeleteUser handles user deletion requests.
+//
+//	@Summary		Delete user
+//	@Description	Deletes a user account. Users can delete their own accounts; admins can delete any account.
+//	@Tags			User
+//	@Security		Bearer
+//	@Produce		json
+//	@Param			id	path		string	true	"ID of the user to delete"
+//	@Success		204	{object}	nil	"Indicates successful deletion with no content."
+//	@Failure		400	{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401	{object}	schemas.ErrorResponse	"Unauthorized due to invalid credentials."
+//	@Failure		403	{object}	schemas.ErrorResponse	"Forbidden action."
+//	@Failure		500	{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/user/{id} [delete]
 func (controller *UserController) DeleteUser(ctx *gin.Context) {
 	tokenUserId, tokenUserName, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {

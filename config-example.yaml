@@ -1,5 +1,6 @@
 host: # Address/domain name where the server is listening
 port: 8000 # Port where the server is listening
+enable_swagger: true # Enable Swagger documentation at /api/v1/swagger/index.html
 db:
   host: # Database host
   port: 5432 # Database port

@@ -19,6 +19,23 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+// UpdateUser handles user update requests.
+//
+//	@Summary		Update user
+//	@Description	Updates user information. Users can update their own information; admins can update any user's information.
+//	@Tags			User
+//	@Security		Bearer
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		string				true	"ID of the user to update"
+//	@Param			user	body		schemas.UpdateUser	true	"User update payload"
+//	@Success		200		{object}	db.User				"Returns the updated user object."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to invalid credentials."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action."
+//	@Failure		404		{object}	schemas.ErrorResponse	"User not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/user/{id} [put]
 func (controller *UserController) UpdateUser(ctx *gin.Context) {
 	tokenUserId, _, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {
@@ -158,8 +175,5 @@ func (controller *UserController) UpdateUser(ctx *gin.Context) {
 		}
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-		"user":   updatedUser,
-	})
+	ctx.JSON(http.StatusOK, updatedUser)
 }

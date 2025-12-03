@@ -45,9 +45,21 @@ Run the application with Make.
 make dev
 ```
 
-
 Logs can be found in the `app.log` file when `GO_ENV=dev` and in
 `/var/log/go-todo/app.log` else.
 
 > With this command you can look at the logs in pretty format: `tail -f app.log | jq --indent 4`
 
+## Swagger documentation
+
+Keep the swagger documentation up to date. To generate the docs make sure you have swag installed.
+
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+
+swag init # Or
+make doc
+```
+
+Generated docs can be accessed by running the program and goint to
+`/api/v1/swagger/index.html`

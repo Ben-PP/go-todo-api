@@ -1,0 +1,2 @@
+replace pgtype.Text string
+replace pgtype.Timestamp time.Time

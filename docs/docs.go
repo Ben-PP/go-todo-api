@@ -47,19 +47,1337 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad request due to invalid input."
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized due to invalid credentials."
+                        "description": "Unauthorized due to invalid credentials.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error."
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Logs out a user by invalidating their refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "parameters": [
+                    {
+                        "description": "Refresh token to invalidate",
+                        "name": "logout",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Refresh"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content - Successfully logged out."
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to invalid or expired token.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "Refreshes JWT access and refresh tokens using a valid refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh tokens",
+                "parameters": [
+                    {
+                        "description": "Refresh token",
+                        "name": "refresh",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Refresh"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns new access and refresh tokens.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to invalid or expired token.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/update-password": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates the password for an authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update user password",
+                "parameters": [
+                    {
+                        "description": "Old and new passwords",
+                        "name": "updatePassword",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.UpdatePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns new access and refresh tokens.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to invalid token or invalid password.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/list": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves todo lists based on the 'show' query parameter. Options include owned, shared, all, and admin (admin requires admin privileges).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Get todo lists",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "all",
+                        "description": "Filter for lists to retrieve: owned, shared, all, admin",
+                        "name": "show",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of todo lists with their associated todos.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for non-admins when requesting admin lists.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a new todo list for the authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Create a new todo list",
+                "parameters": [
+                    {
+                        "description": "Todo list to create",
+                        "name": "list",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CreateList"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the created todo list.",
+                        "schema": {
+                            "$ref": "#/definitions/db.List"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/list/{listID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves a todo list by its ID along with all associated todo items. Access is restricted to users with permissions for the list.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Get todo list with todos",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list to retrieve",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the todo list details along with its todos.",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for users without access to the list.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes a todo list by its ID. Only the owner or an admin can delete the list.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Delete todo list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list to delete",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content, indicating successful deletion."
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for non-owners/non-admins.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates the title and/or description of a specific todo list. Requires ownership of the list or admin privileges.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Update a todo list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list to update",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated title and/or description",
+                        "name": "update",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.UpdateList"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated todo list.",
+                        "schema": {
+                            "$ref": "#/definitions/db.List"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for non-owners or non-admins.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/list/{listID}/share": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves all shares associated with a specific todo list. Requires ownership of the list or admin privileges.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shares"
+                ],
+                "summary": "Get shares for a todo list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of shares for the specified todo list.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/schemas.ResponseShare"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for non-owners or non-admins.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Shares a todo list with another user by their username.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shares"
+                ],
+                "summary": "Share a todo list with another user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list to share",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Share details",
+                        "name": "share",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CreateShare"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the share ID upon successful sharing.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ResponseShare"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list or user not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/list/{listID}/share/{shareID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Removes a share for a todo list by its ID. Only the owner, the shared user, or an admin can remove the share.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shares"
+                ],
+                "summary": "Remove list share",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list to unshare",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the share to remove",
+                        "name": "shareID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content, indicating successful unsharing."
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for non-owners/non-admins/non-shared-users.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list or share not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/list/{listID}/todo": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a new todo item in the specified todo list.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Create a new todo item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Todo item to create",
+                        "name": "todo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CreateTodo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the created todo item.",
+                        "schema": {
+                            "$ref": "#/definitions/db.Todo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/list/{listID}/todo/{todoID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes a todo item by its ID within a specified list. Only users with access to the list can delete the todo item.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Delete todo item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list containing the todo item",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the todo item to delete",
+                        "name": "todoID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content, indicating successful deletion."
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for users without access to the list.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo item or list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates the details of a specific todo item, including title, description, completion status, and deadline. Requires access to the associated todo list.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Update a todo item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the todo list containing the todo item",
+                        "name": "listID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the todo item to update",
+                        "name": "todoID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated todo item details",
+                        "name": "update",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.UpdateTodo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated todo item.",
+                        "schema": {
+                            "$ref": "#/definitions/db.Todo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to missing or invalid JWT.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action for users without access to the todo list.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Todo item or list not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "post": {
+                "description": "Creates a new user account. The first user created is granted admin privileges.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "User creation payload",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the created user object.",
+                        "schema": {
+                            "$ref": "#/definitions/db.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates user information. Users can update their own information; admins can update any user's information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user to update",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User update payload",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.UpdateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the updated user object.",
+                        "schema": {
+                            "$ref": "#/definitions/db.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to invalid credentials.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes a user account. Users can delete their own accounts; admins can delete any account.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Indicates successful deletion with no content."
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to invalid credentials.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{userID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves user information by user ID. Accessible by the user themselves or an admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Read user information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns user information.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ResponseUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request due to invalid input.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized due to invalid or expired token.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden action.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "db.List": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.Todo": {
+            "type": "object",
+            "properties": {
+                "complete_before": {
+                    "type": "string"
+                },
+                "completed": {
+                    "type": "boolean"
+                },
+                "completed_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "list_id": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "db.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "password_hash": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CreateList": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CreateShare": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CreateTodo": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "complete_before": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CreateUser": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.Login": {
             "type": "object",
             "required": [
@@ -88,18 +1406,129 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "schemas.Refresh": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ResponseShare": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "list_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ResponseUser": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.UpdateList": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.UpdatePassword": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.UpdateTodo": {
+            "type": "object",
+            "properties": {
+                "complete_before": {
+                    "type": "string"
+                },
+                "completed": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.UpdateUser": {
+            "type": "object",
+            "required": [
+                "is_admin",
+                "username"
+            ],
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Bearer token is \"Bearer\" followed by a space and JWT access token. Example: \"Bearer xxxxyyyyzzzz\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Go Todo API",
+	Description:      "This is a simple todo application API built with Go and Gin.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -22,6 +22,20 @@ const (
 	admin  = "admin"  // Return every single list
 )
 
+// ReadLists handles reading todo lists based on the 'show' query parameter.
+//
+//	@Summary		Get todo lists
+//	@Description	Retrieves todo lists based on the 'show' query parameter. Options include owned, shared, all, and admin (admin requires admin privileges).
+//	@Tags			Lists
+//	@Security		Bearer
+//	@Produce		json
+//	@Param			show	query		string	false	"Filter for lists to retrieve: owned, shared, all, admin"	default(all)
+//	@Success		200		{array}		map[string]any	"Returns a list of todo lists with their associated todos."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for non-admins when requesting admin lists."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list [get]
 func (controller *TodoController) ReadLists(ctx *gin.Context) {
 	requesterId, requesterUsername, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {
@@ -129,5 +143,5 @@ func (controller *TodoController) ReadLists(ctx *gin.Context) {
 		fmt.Sprintf("%v", listIds),
 		reflect.TypeOf([]db.List{}).String(),
 	)
-	ctx.JSON(200, gin.H{"status": "ok", "lists": response})
+	ctx.JSON(200, response)
 }

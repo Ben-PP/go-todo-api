@@ -19,20 +19,19 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// @BasePath /api/v1
-
-// Login godoc
-// @Summary Login user
-// @Description Logs in a user with username and password, returning JWT tokens upon successful authentication.
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param login body schemas.Login true "Login credentials"
-// @Success 200 {object} schemas.LoginResponse "Returns access and refresh tokens."
-// @Failure 400 "Bad request due to invalid input."
-// @Failure 401 "Unauthorized due to invalid credentials."
-// @Failure 500 "Internal server error."
-// @Router /auth/login [post]
+// Login handles user login requests.
+//
+//	@Summary		Login user
+//	@Description	Logs in a user with username and password, returning JWT tokens upon successful authentication.
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			login	body		schemas.Login			true	"Login credentials"
+//	@Success		200		{object}	schemas.LoginResponse	"Returns access and refresh tokens."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to invalid credentials."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/auth/login [post]
 func (controller *AuthController) Login(ctx *gin.Context) {
 	var payload *schemas.Login
 	if ok := mycontext.ShouldBindBodyWithJSON(&payload, ctx); !ok {

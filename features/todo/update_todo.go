@@ -19,6 +19,24 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// UpdateTodo handles updating a todo item's details.
+//
+//	@Summary		Update a todo item
+//	@Description	Updates the details of a specific todo item, including title, description, completion status, and deadline. Requires access to the associated todo list.
+//	@Tags			Todos
+//	@Security		Bearer
+//	@Accept			json
+//	@Produce		json
+//	@Param			listID	path		string					true	"ID of the todo list containing the todo item"
+//	@Param			todoID	path		string					true	"ID of the todo item to update"
+//	@Param			update	body		schemas.UpdateTodo		true	"Updated todo item details"
+//	@Success		200		{object}	db.Todo					"Returns the updated todo item."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for users without access to the todo list."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo item or list not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID}/todo/{todoID} [patch]
 func (controller *TodoController) UpdateTodo(ctx *gin.Context) {
 	payload := &schemas.UpdateTodo{}
 
@@ -140,5 +158,5 @@ func (controller *TodoController) UpdateTodo(ctx *gin.Context) {
 		newTodo.ID,
 		reflect.TypeOf(newTodo).String(),
 	)
-	ctx.JSON(200, gin.H{"status": "ok", "todo": newTodo})
+	ctx.JSON(200, newTodo)
 }

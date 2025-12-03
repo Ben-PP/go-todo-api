@@ -32,6 +32,4 @@ func (routes *TodoRoutes) Register(rg *gin.RouterGroup) {
 	todoRouter.POST("/", routes.todoController.CreateTodo)
 	todoRouter.PATCH("/:todoID", routes.todoController.UpdateTodo)
 	todoRouter.DELETE("/:todoID", routes.todoController.DeleteTodo)
-
-	// TODO Implement get shares
 }

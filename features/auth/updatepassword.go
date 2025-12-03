@@ -2,19 +2,34 @@ package auth
 
 import (
 	"errors"
+	"net/http"
+	"runtime"
+
 	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/schemas"
 	"go-todo/util/mycontext"
 	"go-todo/util/passwd"
 	"go-todo/util/validate"
-	"net/http"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// UpdatePassword handles user password update requests.
+//
+//	@Summary		Update user password
+//	@Description	Updates the password for an authenticated user.
+//	@Security		Bearer
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			updatePassword	body		schemas.UpdatePassword	true	"Old and new passwords"
+//	@Success		200				{object}	schemas.LoginResponse	"Returns new access and refresh tokens."
+//	@Failure		400				{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401				{object}	schemas.ErrorResponse	"Unauthorized due to invalid token or invalid password."
+//	@Failure		500				{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/auth/update-password [post]
 func (controller *AuthController) UpdatePassword(ctx *gin.Context) {
 	userID, _, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {
@@ -111,9 +126,10 @@ func (controller *AuthController) UpdatePassword(ctx *gin.Context) {
 		mycontext.CtxAddGtInternalError("failed to remove old refresh jwts", file, line, err, ctx)
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"status":        "ok",
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	})
+	response := &schemas.LoginResponse{
+		Status:       "ok",
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+	ctx.JSON(http.StatusOK, response)
 }
