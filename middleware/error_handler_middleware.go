@@ -3,9 +3,11 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"runtime"
+
 	"go-todo/gterrors"
 	"go-todo/logging"
-	"runtime"
+	"go-todo/schemas"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/golang-jwt/jwt/v5"
@@ -182,13 +184,10 @@ func ErrorHandlerMiddleware() gin.HandlerFunc {
 			logging.LogError(errToShow, fmt.Sprintf("%v: %d", file, line), "")
 		}
 
-		body := gin.H{"status": params.StatusMessage}
-		if params.Detail != "" {
-			body = gin.H{
-				"status": params.StatusMessage,
-				"detail": params.Detail,
-			}
+		response := &schemas.ErrorResponse{
+			Status: params.StatusMessage,
+			Detail: params.Detail,
 		}
-		c.JSON(params.Status, body)
+		c.JSON(params.Status, response)
 	}
 }

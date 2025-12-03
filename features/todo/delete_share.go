@@ -16,6 +16,21 @@ import (
 )
 
 // Removes a share for a list
+//
+//	@Summary		Remove list share
+//	@Description	Removes a share for a todo list by its ID. Only the owner, the shared user, or an admin can remove the share.
+//	@Tags			Shares
+//	@Security		Bearer
+//	@Produce		json
+//	@Param			listID	path		string	true	"ID of the todo list to unshare"
+//	@Param			shareID	path		string	true	"ID of the share to remove"
+//	@Success		204		{object}	nil		"No content, indicating successful unsharing."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for non-owners/non-admins/non-shared-users."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo list or share not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID}/share/{shareID} [delete]
 func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 	listID := ctx.Param("listID")
 	shareID := ctx.Param("shareID")
@@ -112,5 +127,5 @@ func (controller *TodoController) DeleteShare(ctx *gin.Context) {
 		shareID,
 		reflect.TypeOf(listShare).String(),
 	)
-	ctx.JSON(200, gin.H{"status": "removed", "share": shareID})
+	ctx.JSON(204, gin.H{})
 }

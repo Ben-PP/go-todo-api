@@ -18,6 +18,23 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// UpdateList handles updating a todo list's title and/or description.
+//
+//	@Summary		Update a todo list
+//	@Description	Updates the title and/or description of a specific todo list. Requires ownership of the list or admin privileges.
+//	@Tags			Lists
+//	@Security		Bearer
+//	@Accept			json
+//	@Produce		json
+//	@Param			listID	path		string					true	"ID of the todo list to update"
+//	@Param			update	body		schemas.UpdateList		true	"Updated title and/or description"
+//	@Success		200		{object}	db.List					"Returns the updated todo list."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for non-owners or non-admins."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo list not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID} [patch]
 func (controller *TodoController) UpdateList(ctx *gin.Context) {
 	var payload *schemas.UpdateList
 	if ok := mycontext.ShouldBindBodyWithJSON(&payload, ctx); !ok {
@@ -101,5 +118,5 @@ func (controller *TodoController) UpdateList(ctx *gin.Context) {
 		newList.ID,
 		reflect.TypeOf(newList).String(),
 	)
-	ctx.JSON(200, gin.H{"status": "ok", "list": newList})
+	ctx.JSON(200, newList)
 }

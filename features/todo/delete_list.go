@@ -13,6 +13,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// DeleteList handles the deletion of a todo list.
+//
+//	@Summary		Delete todo list
+//	@Description	Deletes a todo list by its ID. Only the owner or an admin can delete the list.
+//	@Tags			Lists
+//	@Security		Bearer
+//	@Produce		json
+//	@Param			listID	path		string	true	"ID of the todo list to delete"
+//	@Success		204		{object}	nil		"No content, indicating successful deletion."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for non-owners/non-admins."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo list not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID} [delete]
 func (controller *TodoController) DeleteList(ctx *gin.Context) {
 	requesterId, requesterUsername, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {

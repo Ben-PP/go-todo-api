@@ -3,17 +3,32 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"runtime"
+
 	"go-todo/gterrors"
 	"go-todo/logging"
 	"go-todo/schemas"
 	"go-todo/util/jwt"
 	"go-todo/util/mycontext"
-	"net/http"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 )
 
+// Logout handles user logout requests.
+//
+//	@Summary		Logout user
+//	@Description	Logs out a user by invalidating their refresh token.
+//	@Security		Bearer
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			logout	body	schemas.Refresh	true	"Refresh token to invalidate"
+//	@Success		204		"No Content - Successfully logged out."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to invalid or expired token."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/auth/logout [post]
 func (controller *AuthController) Logout(ctx *gin.Context) {
 	// TODO Add access jwt to redis blacklist
 	var payload *schemas.Refresh

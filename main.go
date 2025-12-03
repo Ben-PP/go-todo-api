@@ -9,10 +9,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-
 	db "go-todo/db/sqlc"
 	docs "go-todo/docs"
 	"go-todo/features/auth"
@@ -22,11 +18,23 @@ import (
 	"go-todo/middleware"
 	"go-todo/util/config"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/jackc/pgx/v5"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+//	@title			Go Todo API
+//	@version		1.2.0
+//	@description	This is a simple todo application API built with Go and Gin.
+
+//	@securityDefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				Bearer token is "Bearer" followed by a space and JWT access token. Example: "Bearer xxxxyyyyzzzz"
 
 //go:embed db/migrations/*.sql
 var migrationFiles embed.FS
@@ -120,15 +128,15 @@ func main() {
 		)
 	}))
 
-	{
-		docs.SwaggerInfo.BasePath = "/api/v1"
-		v1 := router.Group("/api/v1")
-		v1.GET("/status", func(ctx *gin.Context) {
-			ctx.JSON(200, gin.H{"status": "ok"})
-		})
-		authRoutes.Register(v1)
-		userRoutes.Register(v1)
-		listRoutes.Register(v1)
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	v1 := router.Group("/api/v1")
+	v1.GET("/status", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"status": "ok"})
+	})
+	authRoutes.Register(v1)
+	userRoutes.Register(v1)
+	listRoutes.Register(v1)
+	if config.EnableSwagger {
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 

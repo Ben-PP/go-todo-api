@@ -19,6 +19,18 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+// CreateUser handles user creation requests.
+//
+//	@Summary		Create user
+//	@Description	Creates a new user account. The first user created is granted admin privileges.
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		schemas.CreateUser	true	"User creation payload"
+//	@Success		201		{object}	db.User				"Returns the created user object."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/user [post]
 func (controller *UserController) CreateUser(ctx *gin.Context) {
 	var payload *schemas.CreateUser
 	if ok := mycontext.ShouldBindBodyWithJSON(&payload, ctx); !ok {
@@ -99,5 +111,5 @@ func (controller *UserController) CreateUser(ctx *gin.Context) {
 		user.ID,
 		reflect.TypeOf(db.User{}).String(),
 	)
-	ctx.JSON(http.StatusCreated, gin.H{"status": "created", "user": user})
+	ctx.JSON(http.StatusCreated, user)
 }

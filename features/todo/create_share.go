@@ -19,6 +19,22 @@ import (
 )
 
 // Creates a share for a list
+//
+//	@Summary		Share a todo list with another user
+//	@Description	Shares a todo list with another user by their username.
+//	@Tags			Shares
+//	@Security		Bearer
+//	@Accept			json
+//	@Produce		json
+//	@Param			listID	path		string					true	"ID of the todo list to share"
+//	@Param			share	body		schemas.CreateShare		true	"Share details"
+//	@Success		201		{object}	schemas.ResponseShare	"Returns the share ID upon successful sharing."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo list or user not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID}/share [post]
 func (controller *TodoController) CreateShare(ctx *gin.Context) {
 	var payload *schemas.CreateShare
 	if ok := mycontext.ShouldBindBodyWithJSON(&payload, ctx); !ok {
@@ -125,6 +141,15 @@ func (controller *TodoController) CreateShare(ctx *gin.Context) {
 		return
 	}
 
+	share := &schemas.ResponseShare{
+		Share: schemas.Share{
+			ID:     listShare.ID,
+			ListID: listShare.ListID,
+			UserID: listShare.UserID,
+		},
+		Username: payload.UserName,
+	}
+
 	logging.LogObjectEvent(
 		ctx.FullPath(),
 		ctx.ClientIP(),
@@ -133,5 +158,5 @@ func (controller *TodoController) CreateShare(ctx *gin.Context) {
 		listShare.ID,
 		reflect.TypeOf(db.ListShare{}).String(),
 	)
-	ctx.JSON(201, gin.H{"status": "shared", "id": listShare.ID})
+	ctx.JSON(201, *share)
 }

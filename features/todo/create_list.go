@@ -19,6 +19,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// CreateList handles the creation of a new todo list.
+//
+//	@Summary		Create a new todo list
+//	@Description	Creates a new todo list for the authenticated user.
+//	@Tags			Lists
+//	@Security		Bearer
+//	@Accept			json
+//	@Produce		json
+//	@Param			list	body		schemas.CreateList	true	"Todo list to create"
+//	@Success		201		{object}	db.List			"Returns the created todo list."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list [post]
 func (controller *TodoController) CreateList(ctx *gin.Context) {
 	var payload *schemas.CreateList
 	description := ""

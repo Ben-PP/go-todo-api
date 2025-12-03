@@ -17,6 +17,22 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// DeleteTodo handles the deletion of a todo item.
+//
+//	@Summary		Delete todo item
+//	@Description	Deletes a todo item by its ID within a specified list. Only users with access to the list can delete the todo item.
+//	@Tags			Todos
+//	@Security		Bearer
+//	@Produce		json
+//	@Param			listID	path		string	true	"ID of the todo list containing the todo item"
+//	@Param			todoID	path		string	true	"ID of the todo item to delete"
+//	@Success		204		{object}	nil		"No content, indicating successful deletion."
+//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
+//	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
+//	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for users without access to the list."
+//	@Failure		404		{object}	schemas.ErrorResponse	"Todo item or list not found."
+//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Router			/list/{listID}/todo/{todoID} [delete]
 func (controller *TodoController) DeleteTodo(ctx *gin.Context) {
 	requesterId, requesterUsername, _, err := mycontext.GetTokenVariables(ctx)
 	if err != nil {
