@@ -119,5 +119,5 @@ func (controller *TodoController) CreateList(ctx *gin.Context) {
 		list.ID,
 		reflect.TypeOf(list).String(),
 	)
-	ctx.JSON(201, gin.H{"status": "created", "list": list})
+	ctx.JSON(201, list)
 }

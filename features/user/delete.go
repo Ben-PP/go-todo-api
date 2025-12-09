@@ -22,7 +22,7 @@ import (
 //	@Security		Bearer
 //	@Produce		json
 //	@Param			id	path		string	true	"ID of the user to delete"
-//	@Success		204	{object}	nil	"Indicates successful deletion with no content."
+//	@Success		204	"Indicates successful deletion with no content."
 //	@Failure		400	{object}	schemas.ErrorResponse	"Bad request due to invalid input."
 //	@Failure		401	{object}	schemas.ErrorResponse	"Unauthorized due to invalid credentials."
 //	@Failure		403	{object}	schemas.ErrorResponse	"Forbidden action."

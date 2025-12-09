@@ -260,8 +260,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "object",
-                                "additionalProperties": true
+                                "$ref": "#/definitions/schemas.ListWithTodos"
                             }
                         }
                     },
@@ -375,8 +374,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns the todo list details along with its todos.",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/schemas.ListWithTodos"
                         }
                     },
                     "400": {
@@ -1007,7 +1005,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Returns the created user object.",
                         "schema": {
-                            "$ref": "#/definitions/db.User"
+                            "$ref": "#/definitions/db.CreateUserRow"
                         }
                     },
                     "400": {
@@ -1065,7 +1063,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns the updated user object.",
                         "schema": {
-                            "$ref": "#/definitions/db.User"
+                            "$ref": "#/definitions/db.UpdateUserRow"
                         }
                     },
                     "400": {
@@ -1223,6 +1221,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "db.CreateUserRow": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "db.List": {
             "type": "object",
             "properties": {
@@ -1284,7 +1299,7 @@ const docTemplate = `{
                 }
             }
         },
-        "db.User": {
+        "db.UpdateUserRow": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1295,9 +1310,6 @@ const docTemplate = `{
                 },
                 "is_admin": {
                     "type": "boolean"
-                },
-                "password_hash": {
-                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -1374,6 +1386,35 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ListWithTodos": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "todos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.Todo"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -1523,7 +1564,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "1.2.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},

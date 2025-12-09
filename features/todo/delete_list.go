@@ -21,7 +21,7 @@ import (
 //	@Security		Bearer
 //	@Produce		json
 //	@Param			listID	path		string	true	"ID of the todo list to delete"
-//	@Success		204		{object}	nil		"No content, indicating successful deletion."
+//	@Success		204		"No content, indicating successful deletion."
 //	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
 //	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
 //	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for non-owners/non-admins."
