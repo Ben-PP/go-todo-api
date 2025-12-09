@@ -8,14 +8,13 @@ import (
 
 	"go-todo/gterrors"
 	"go-todo/logging"
+	"go-todo/schemas"
 	"go-todo/util/database"
 	"go-todo/util/mycontext"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 )
-
-// TODO Create a response schema for this
 
 // ReadListWithTodos handles the retrieval of a todo list along with its associated todos.
 //
@@ -25,7 +24,7 @@ import (
 //	@Security		Bearer
 //	@Produce		json
 //	@Param			listID	path		string	true	"ID of the todo list to retrieve"
-//	@Success		200		{object}	map[string]any	"Returns the todo list details along with its todos."
+//	@Success		200		{object}	schemas.ListWithTodos	"Returns the todo list details along with its todos."
 //	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
 //	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
 //	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for users without access to the list."
@@ -90,14 +89,9 @@ func (controller *TodoController) ReadListWithTodos(ctx *gin.Context) {
 		return
 	}
 
-	response := map[string]any{
-		"id":          list.ID,
-		"user_id":     list.UserID,
-		"title":       list.Title,
-		"description": list.Description,
-		"created_at":  list.CreatedAt,
-		"updated_at":  list.UpdatedAt,
-		"todos":       todos,
+	response := schemas.ListWithTodos{
+		List:  list,
+		Todos: todos,
 	}
 
 	logging.LogObjectEvent(

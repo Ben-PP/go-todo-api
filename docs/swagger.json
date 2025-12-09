@@ -4,7 +4,7 @@
         "description": "This is a simple todo application API built with Go and Gin.",
         "title": "Go Todo API",
         "contact": {},
-        "version": "1.0"
+        "version": "1.2.0"
     },
     "paths": {
         "/auth/login": {
@@ -252,8 +252,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "object",
-                                "additionalProperties": true
+                                "$ref": "#/definitions/schemas.ListWithTodos"
                             }
                         }
                     },
@@ -367,8 +366,7 @@
                     "200": {
                         "description": "Returns the todo list details along with its todos.",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/schemas.ListWithTodos"
                         }
                     },
                     "400": {
@@ -999,7 +997,7 @@
                     "201": {
                         "description": "Returns the created user object.",
                         "schema": {
-                            "$ref": "#/definitions/db.User"
+                            "$ref": "#/definitions/db.CreateUserRow"
                         }
                     },
                     "400": {
@@ -1057,7 +1055,7 @@
                     "200": {
                         "description": "Returns the updated user object.",
                         "schema": {
-                            "$ref": "#/definitions/db.User"
+                            "$ref": "#/definitions/db.UpdateUserRow"
                         }
                     },
                     "400": {
@@ -1215,6 +1213,23 @@
         }
     },
     "definitions": {
+        "db.CreateUserRow": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "db.List": {
             "type": "object",
             "properties": {
@@ -1276,7 +1291,7 @@
                 }
             }
         },
-        "db.User": {
+        "db.UpdateUserRow": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1287,9 +1302,6 @@
                 },
                 "is_admin": {
                     "type": "boolean"
-                },
-                "password_hash": {
-                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -1366,6 +1378,35 @@
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ListWithTodos": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "todos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/db.Todo"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

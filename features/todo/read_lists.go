@@ -9,6 +9,7 @@ import (
 	db "go-todo/db/sqlc"
 	"go-todo/gterrors"
 	"go-todo/logging"
+	"go-todo/schemas"
 	"go-todo/util/database"
 	"go-todo/util/mycontext"
 
@@ -30,7 +31,7 @@ const (
 //	@Security		Bearer
 //	@Produce		json
 //	@Param			show	query		string	false	"Filter for lists to retrieve: owned, shared, all, admin"	default(all)
-//	@Success		200		{array}		map[string]any	"Returns a list of todo lists with their associated todos."
+//	@Success		200		{array}		schemas.ListWithTodos	"Returns a list of todo lists with their associated todos."
 //	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
 //	@Failure		401		{object}	schemas.ErrorResponse	"Unauthorized due to missing or invalid JWT."
 //	@Failure		403		{object}	schemas.ErrorResponse	"Forbidden action for non-admins when requesting admin lists."
@@ -121,16 +122,18 @@ func (controller *TodoController) ReadLists(ctx *gin.Context) {
 		todoMap[todo.ListID] = append(todoMap[todo.ListID], todo)
 	}
 
-	response := make([]map[string]any, 0, len(*lists))
+	response := make([]schemas.ListWithTodos, 0, len(*lists))
 	for _, list := range *lists {
-		item := map[string]any{
-			"id":          list.ID,
-			"user_id":     list.UserID,
-			"title":       list.Title,
-			"description": list.Description,
-			"created_at":  list.CreatedAt,
-			"updated_at":  list.UpdatedAt,
-			"todos":       todoMap[list.ID],
+		item := schemas.ListWithTodos{
+			List: db.List{
+				ID:          list.ID,
+				UserID:      list.UserID,
+				Title:       list.Title,
+				Description: list.Description,
+				CreatedAt:   list.CreatedAt,
+				UpdatedAt:   list.UpdatedAt,
+			},
+			Todos: todoMap[list.ID],
 		}
 		response = append(response, item)
 	}

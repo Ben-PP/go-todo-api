@@ -27,9 +27,9 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		schemas.CreateUser	true	"User creation payload"
-//	@Success		201		{object}	db.User				"Returns the created user object."
-//	@Failure		400		{object}	schemas.ErrorResponse	"Bad request due to invalid input."
-//	@Failure		500		{object}	schemas.ErrorResponse	"Internal server error."
+//	@Success		201		{object}	db.CreateUserRow			"Returns the created user object."
+//	@Failure		400		{object}	schemas.ErrorResponse		"Bad request due to invalid input."
+//	@Failure		500		{object}	schemas.ErrorResponse		"Internal server error."
 //	@Router			/user [post]
 func (controller *UserController) CreateUser(ctx *gin.Context) {
 	var payload *schemas.CreateUser
