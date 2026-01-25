@@ -4,7 +4,7 @@
         "description": "This is a simple todo application API built with Go and Gin.",
         "title": "Go Todo API",
         "contact": {},
-        "version": "1.2.0"
+        "version": "1.2.2"
     },
     "paths": {
         "/auth/login": {

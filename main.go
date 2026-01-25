@@ -28,7 +28,7 @@ import (
 )
 
 //	@title			Go Todo API
-//	@version		1.3.0
+//	@version		1.2.2
 //	@description	This is a simple todo application API built with Go and Gin.
 
 //	@securityDefinitions.apikey	Bearer
@@ -68,6 +68,7 @@ func main() {
 		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to initialize migration source.")
 		return
 	}
+	defer migrationsDriver.Close()
 
 	m, err := migrate.NewWithSourceInstance(
 		"iofs",
@@ -84,9 +85,11 @@ func main() {
 		if err != migrate.ErrNoChange {
 			_, file, line, _ := runtime.Caller(1)
 			logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to run database migrations.")
+			m.Close()
 			return
 		}
 	}
+	m.Close()
 
 	conn, err := pgx.Connect(context.Background(), dbUrl)
 	if err != nil {
