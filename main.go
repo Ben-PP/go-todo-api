@@ -22,13 +22,13 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 //	@title			Go Todo API
-//	@version		1.2.2
+//	@version		1.2.3
 //	@description	This is a simple todo application API built with Go and Gin.
 
 //	@securityDefinitions.apikey	Bearer
@@ -91,18 +91,15 @@ func main() {
 	}
 	m.Close()
 
-	conn, err := pgx.Connect(context.Background(), dbUrl)
+	dbPool, err := pgxpool.New(context.Background(), dbUrl)
 	if err != nil {
 		_, file, line, _ := runtime.Caller(1)
-		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to connect to database.")
+		logging.LogError(err, fmt.Sprintf("%v: %d", file, line), "Failed to create database connection pool.")
 		return
-	} else {
-		fmt.Println("Connected to database")
 	}
+	defer dbPool.Close()
 
-	defer conn.Close(ctx)
-
-	mydb := db.New(conn)
+	mydb := db.New(dbPool)
 
 	authController := auth.NewController(mydb, ctx)
 	authRoutes := auth.NewRoutes(authController)

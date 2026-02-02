@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+
 	db "go-todo/db/sqlc"
 	"go-todo/logging"
 	"go-todo/util/jwt"
@@ -57,7 +58,6 @@ func generateTokens(family string, user db.User) (
 		user.IsAdmin,
 	)
 	if err != nil {
-
 		return "", nil, "", nil, err
 	}
 	return
